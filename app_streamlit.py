@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import streamlit as st
 
@@ -25,7 +26,7 @@ st.set_page_config(
 )
 
 st.title("🎬 Traductor profesional de videos a español")
-st.write("Genera subtítulos y agrega audio español como segunda pista sincronizada por segmentos.")
+st.write("Genera subtítulos y audio español sincronizado por segmentos.")
 
 if "input_folder" not in st.session_state:
     st.session_state.input_folder = ""
@@ -89,13 +90,23 @@ with col1:
     copy_materials = st.checkbox("Copiar PDFs y materiales del curso", value=True)
 
 with col2:
-    generate_audio = st.checkbox("Agregar audio español como segunda pista", value=True)
+    generate_audio = st.checkbox("Generar audio español", value=True)
+
+    audio_mode = st.radio(
+        "Modo de audio",
+        [
+            "Español + Inglés",
+            "Solo Español"
+        ],
+        index=0
+    )
+
     clean_temp = st.checkbox("Eliminar audios temporales al finalizar", value=True)
 
 model_size = st.selectbox(
     "Modelo Whisper",
     ["tiny", "base", "small"],
-    index=2
+    index=1
 )
 
 if model_size == "tiny":
@@ -104,6 +115,17 @@ elif model_size == "base":
     st.info("⚖️ Base: balance entre velocidad y calidad.")
 elif model_size == "small":
     st.info("🎯 Small: recomendado para cursos y tutoriales.")
+
+max_workers = st.slider(
+    "Videos en paralelo",
+    min_value=1,
+    max_value=4,
+    value=2
+)
+
+if model_size == "small" and max_workers > 2:
+    st.warning("Con Whisper small se recomienda máximo 2 videos en paralelo.")
+    max_workers = 2
 
 st.divider()
 
@@ -159,6 +181,10 @@ if start:
         st.error("Selecciona la carpeta destino base.")
         st.stop()
 
+    if os.path.basename(os.path.normpath(output_folder_base)).endswith("_ES"):
+        st.error("Selecciona la carpeta destino base, no la carpeta final _ES.")
+        st.stop()
+
     parent_name = os.path.basename(os.path.normpath(input_folder))
     output_folder = os.path.join(output_folder_base, f"{parent_name}_ES")
 
@@ -179,6 +205,7 @@ if start:
         copy_course_materials(input_folder, output_folder)
 
     st.info(f"Videos encontrados: {len(videos)}")
+    st.info(f"Videos en paralelo: {max_workers}")
     st.info(f"Guardando resultado en: {output_folder}")
 
     progress_bar = st.progress(0)
@@ -186,30 +213,44 @@ if start:
     log_box = st.empty()
 
     logs = []
+    completed = 0
 
-    for index, video_path in enumerate(videos, start=1):
-        status_text.write(f"Procesando {index}/{len(videos)}: {video_path}")
+    def process_video_job(video_path):
+        process_single_video(
+            input_video=video_path,
+            input_folder=input_folder,
+            output_folder=output_folder,
+            generate_subs=True,
+            burn_subs=burn_subs,
+            generate_audio=generate_audio,
+            keep_srt=keep_srt,
+            model_size=model_size,
+            voice=voice_code,
+            clean_temp=clean_temp,
+            audio_mode=audio_mode
+        )
 
-        try:
-            process_single_video(
-                input_video=video_path,
-                input_folder=input_folder,
-                output_folder=output_folder,
-                generate_subs=True,
-                burn_subs=burn_subs,
-                generate_audio=generate_audio,
-                keep_srt=keep_srt,
-                model_size=model_size,
-                voice=voice_code,
-                clean_temp=clean_temp
-            )
+        return video_path
 
-            logs.append(f"✅ Procesado: {video_path}")
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(process_video_job, video_path): video_path
+            for video_path in videos
+        }
 
-        except Exception as e:
-            logs.append(f"❌ Error en {video_path}: {e}")
+        for future in as_completed(futures):
+            video_path = futures[future]
 
-        progress_bar.progress(index / len(videos))
-        log_box.text("\n".join(logs[-10:]))
+            try:
+                result = future.result()
+                logs.append(f"✅ Procesado: {result}")
+
+            except Exception as e:
+                logs.append(f"❌ Error en {video_path}: {e}")
+
+            completed += 1
+            progress_bar.progress(completed / len(videos))
+            status_text.write(f"Procesados {completed}/{len(videos)}")
+            log_box.text("\n".join(logs[-10:]))
 
     st.success("Proceso terminado.")

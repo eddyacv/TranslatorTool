@@ -1,135 +1,56 @@
-# 🎬 TranslatorTool
+# 🎬 TranslatorTool (Traductor Automático de Cursos y Videos)
 
-Herramienta desarrollada en Python para traducir cursos y videos automáticamente al español.
+¡Hola! 👋 Esta es una herramienta que te permite **traducir videos y cursos completos al español** de forma totalmente automática.
 
-## Características
-
-* Traducción automática de audio usando Whisper.
-* Generación de subtítulos en español (.srt).
-* Generación de audio en español mediante TTS.
-* Sincronización automática por segmentos.
-* Conserva la estructura original de carpetas.
-* Copia automáticamente materiales del curso:
-
-  * PDF
-  * DOCX
-  * XLSX
-  * TXT
-  * HTML
-* Permite mantener audio original y agregar español como segunda pista.
-* Selección de voces desde la interfaz.
-* Vista previa y descarga de ejemplos de voz.
-* Limpieza automática de archivos temporales.
+Si tienes un curso en inglés (por ejemplo, de Udemy o Domestika), esta herramienta tomará todos los videos, extraerá lo que dicen, lo traducirá, creará subtítulos y hasta le pondrá una nueva voz en español. ¡Y además mantendrá todos tus archivos PDF y carpetas ordenadas exactamente igual que en el curso original!
 
 ---
 
-## Estructura de salida
+## 🌟 ¿Qué hace exactamente?
 
-Ejemplo:
-
-Curso original:
-
-Nivel 1/
-├── clase1.mp4
-├── clase1.pdf
-
-Resultado:
-
-Curso_ES/
-├── Nivel 1
-│   ├── clase1_es.mp4
-│   ├── clase1_es.srt
-│   └── clase1.pdf
-│
-└── recursos
-├── voces
-├── cache
-└── logs
+1. **Escucha y Traduce**: Extrae el audio original, reconoce lo que dicen y lo traduce al español.
+2. **Crea Subtítulos**: Genera un archivo `.srt` con los subtítulos en español para cada video.
+3. **Pone Voz en Español**: Genera un nuevo audio en español sincronizado con el video.
+4. **Guarda tus Archivos**: Si en tus carpetas hay PDFs, Excels o documentos de texto, los copiará intactos a la carpeta final para que no pierdas nada.
+5. **No desordena nada**: Te entregará una nueva carpeta con exactamente las mismas subcarpetas que tu curso original, pero con los videos ya traducidos.
 
 ---
 
-## Requisitos
+## 🛠️ ¿Qué necesitas para empezar?
 
-* Python 3.11 o superior
-* FFmpeg instalado y agregado al PATH
+Para que esto funcione en tu computadora, solo necesitas dos cosas:
 
-Verificar:
-
-```bash
-ffmpeg -version
-```
+1. **Tener Python instalado** (Versión 3.11 o superior).
+2. **Tener FFmpeg instalado** (Es un programa oculto que permite manipular videos y audios. Debes asegurarte de tenerlo instalado y agregado al PATH de tu sistema Windows/Mac).
 
 ---
 
-## Instalación
+## ⚙️ ¿Cómo lo instalo?
 
-Instalar dependencias:
-
-```bash
-pip install streamlit
-pip install faster-whisper
-pip install deep-translator
-pip install edge-tts
-```
-
----
-
-## Ejecución
-
-Desde la carpeta del proyecto:
-
-```bash
-python -m streamlit run app_streamlit.py
-```
-
-La aplicación abrirá automáticamente:
-
-```text
-http://localhost:8501
-```
+1. Descarga esta carpeta con todos los archivos.
+2. Abre tu terminal (Símbolo del sistema o PowerShell).
+3. Navega hasta esta carpeta.
+4. Instala los requerimientos escribiendo este comando y presionando Enter:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ---
 
-## Flujo de trabajo
+## 🚀 ¿Cómo se usa?
 
-1. Seleccionar carpeta del curso.
-2. Seleccionar carpeta de destino.
-3. Elegir modelo Whisper.
-4. Elegir voz.
-5. Configurar subtítulos y audio.
-6. Procesar.
+¡Usarlo es muy fácil porque tiene una interfaz visual!
 
-La herramienta:
+1. Abre tu terminal en la carpeta de este programa.
+2. Escribe este comando y presiona Enter:
+   ```bash
+   streamlit run app_streamlit.py
+   ```
+3. Se abrirá una ventana en tu navegador de internet. 
+4. Desde esa ventana solo tienes que:
+   - Seleccionar la carpeta donde tienes tu curso original en inglés.
+   - Seleccionar en qué carpeta quieres que se guarde el curso traducido.
+   - Elegir qué voz en español quieres que narre los videos.
+   - ¡Hacer clic en **Procesar** y dejar que la magia ocurra! ☕
 
-* Detecta videos.
-* Transcribe audio.
-* Traduce al español.
-* Genera subtítulos.
-* Genera audio sincronizado.
-* Conserva materiales del curso.
-* Mantiene la estructura de carpetas.
-
----
-
-## Tecnologías utilizadas
-
-* Python
-* Streamlit
-* FFmpeg
-* Faster-Whisper
-* Edge-TTS
-* Deep Translator
-
----
-
-## Estado del proyecto
-
-Versión inicial enfocada en:
-
-* Cursos Udemy
-* Domestika
-* Coloso
-* Tutoriales educativos
-* Bibliotecas de aprendizaje personal
-
-Proyecto desarrollado para automatizar la traducción y organización de contenido educativo.
+*(Dependiendo de la duración de tus videos y la potencia de tu computadora, este proceso puede tardar un poco. ¡Puedes ir a tomar un café mientras trabaja!)*

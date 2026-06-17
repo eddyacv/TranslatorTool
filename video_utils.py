@@ -116,10 +116,27 @@ def concat_audio_files(audio_files, output_audio):
 
     with open(list_path, "w", encoding="utf-8") as f:
         for audio in audio_files:
-            safe_audio = audio.replace("\\", "/")
+            safe_audio = audio.replace("\\", "/").replace("'", r"'\''")
             f.write(f"file '{safe_audio}'\n")
 
     cmd = f'ffmpeg -y -f concat -safe 0 -i "{list_path}" -c:a pcm_s16le "{output_audio}"'
     run_cmd(cmd)
 
     os.remove(list_path)
+
+def replace_with_spanish_audio(video_path, spanish_audio_path, output_path):
+    cmd = (
+        f'ffmpeg -y '
+        f'-i "{video_path}" '
+        f'-i "{spanish_audio_path}" '
+        f'-map 0:v '
+        f'-map 1:a '
+        f'-c:v copy '
+        f'-c:a aac '
+        f'-metadata:s:a:0 language=spa '
+        f'-metadata:s:a:0 title="Español" '
+        f'-disposition:a:0 default '
+        f'"{output_path}"'
+    )
+
+    run_cmd(cmd)

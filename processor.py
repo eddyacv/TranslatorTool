@@ -7,6 +7,7 @@ from video_utils import (
     extract_audio,
     burn_subtitles,
     add_spanish_audio_track,
+    replace_with_spanish_audio,
     make_silence,
     fit_segment_audio,
     concat_audio_files
@@ -42,9 +43,10 @@ def process_single_video(
     burn_subs=False,
     generate_audio=True,
     keep_srt=True,
-    model_size="small",
+    model_size="base",
     voice="es-PE-AlexNeural",
-    clean_temp=True
+    clean_temp=True,
+    audio_mode="Español + Inglés"
 ):
     relative_path = os.path.relpath(os.path.dirname(input_video), input_folder)
     output_dir = os.path.join(output_folder, relative_path)
@@ -52,7 +54,7 @@ def process_single_video(
     os.makedirs(output_dir, exist_ok=True)
 
     recursos_dir = os.path.join(output_folder, "recursos")
-    temp_dir = os.path.join(recursos_dir, "temporales")
+    temp_dir = os.path.join(recursos_dir, "temporales", os.path.splitext(os.path.basename(input_video))[0])
 
     os.makedirs(temp_dir, exist_ok=True)
 
@@ -61,7 +63,6 @@ def process_single_video(
 
     temp_audio = os.path.join(temp_dir, f"{name}_original.wav")
     srt_path = os.path.join(output_dir, f"{name}_es.srt")
-
     final_audio = os.path.join(temp_dir, f"{name}_audio_es_final.wav")
     final_video = os.path.join(output_dir, f"{name}_es.mp4")
 
@@ -128,11 +129,19 @@ def process_single_video(
 
         concat_audio_files(audio_parts, final_audio)
 
-        add_spanish_audio_track(
-            video_path=current_video,
-            spanish_audio_path=final_audio,
-            output_path=final_video
-        )
+        if audio_mode == "Solo Español":
+            replace_with_spanish_audio(
+                video_path=current_video,
+                spanish_audio_path=final_audio,
+                output_path=final_video
+            )
+        else:
+            add_spanish_audio_track(
+                video_path=current_video,
+                spanish_audio_path=final_audio,
+                output_path=final_video
+            )
+
     else:
         if current_video != input_video:
             shutil.copy2(current_video, final_video)
@@ -154,9 +163,10 @@ def process_folder(
     generate_audio=True,
     keep_srt=True,
     copy_materials=True,
-    model_size="small",
+    model_size="base",
     voice="es-PE-AlexNeural",
-    clean_temp=True
+    clean_temp=True,
+    audio_mode="Español + Inglés"
 ):
     if copy_materials:
         copy_course_materials(input_folder, output_folder)
@@ -178,5 +188,6 @@ def process_folder(
                 keep_srt=keep_srt,
                 model_size=model_size,
                 voice=voice,
-                clean_temp=clean_temp
+                clean_temp=clean_temp,
+                audio_mode=audio_mode
             )
