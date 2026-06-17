@@ -1,0 +1,137 @@
+# =========================
+
+# Python
+
+# =========================
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# =========================
+
+# Virtual Environments
+
+# =========================
+
+venv/
+.venv/
+env/
+ENV/
+
+# =========================
+
+# IDEs
+
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+
+# Operating System
+
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+
+# Streamlit
+
+# =========================
+
+.streamlit/secrets.toml
+
+# =========================
+
+# Logs
+
+# =========================
+
+*.log
+logs/
+
+# =========================
+
+# Temporary files
+
+# =========================
+
+temp/
+tmp/
+*.tmp
+
+# =========================
+
+# TranslatorTool Resources
+
+# =========================
+
+recursos/cache/
+recursos/logs/
+recursos/temporales/
+recursos/voces/
+
+# =========================
+
+# Generated Outputs
+
+# =========================
+
+*_ES/
+
+# Generated subtitles
+
+*_es.srt
+
+# Generated translated videos
+
+*_es.mp4
+
+# Generated translated audios
+
+*_es.mp3
+**audio_es**
+
+# Temporary audio files
+
+*.wav
+*_temp.*
+
+# FFmpeg temporary files
+
+*_list.txt
+
+# =========================
+
+# Whisper / HuggingFace
+
+# =========================
+
+.cache/
+huggingface/
+models/
+
+# =========================
+
+# Python build
+
+# =========================
+
+build/
+dist/
+*.spec
+pip-wheel-metadata/
+
+# =========================
+
+# Environment variables
+
+# =========================
+
+.env
+.env.*
